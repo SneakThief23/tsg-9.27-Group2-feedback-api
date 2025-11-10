@@ -1,6 +1,11 @@
 spring:
   application:
     name: Group2
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+    serialization:
+      write-dates-as-timestamps: false
 
   datasource:
     url: jdbc:postgresql://localhost:5432/Group2
