@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: Group2
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Group2
+    username: postgres
+    password: passpass
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
