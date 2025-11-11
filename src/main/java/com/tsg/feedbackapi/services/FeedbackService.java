@@ -1,6 +1,6 @@
 package com.tsg.feedbackapi.services;
 
-import com.tsg.feedbackapi.dtos.FeedbackRequestDTO;
+import com.tsg.feedbackapi.dtos.FeedbackDto;
 import com.tsg.feedbackapi.repositories.FeedbackRepo;
 import com.tsg.feedbackapi.repositories.entities.Feedback;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class FeedbackService {
         this.repository = repository;
     }
 
-    public Feedback saveFeedback(FeedbackRequestDTO request) {
+    public Feedback saveFeedback(FeedbackDto request) {
         Feedback entity = new Feedback();
         entity.setMemberId(request.getMemberId());
         entity.setProviderName(request.getProviderName());

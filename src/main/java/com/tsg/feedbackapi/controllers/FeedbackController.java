@@ -1,7 +1,8 @@
 package com.tsg.feedbackapi.controllers;
 
-import com.tsg.feedbackapi.dtos.FeedbackRequestDTO;
+import com.tsg.feedbackapi.dtos.FeedbackDto;
 import com.tsg.feedbackapi.dtos.FeedbackResponseDTO;
+import com.tsg.feedbackapi.mappers.FeedbackMapper;
 import com.tsg.feedbackapi.repositories.entities.Feedback;
 import com.tsg.feedbackapi.services.FeedbackService;
 import jakarta.validation.Valid;
@@ -22,35 +23,24 @@ public class FeedbackController {
     }
 
     @PostMapping
-    public ResponseEntity<FeedbackResponseDTO> submitFeedback(@RequestBody @Valid FeedbackRequestDTO request) {
+    public ResponseEntity<FeedbackDto> submitFeedback(@RequestBody @Valid FeedbackDto request) {
         Feedback saved = feedbackService.saveFeedback(request);
-        FeedbackResponseDTO response = mapToResponse(saved);
-        return ResponseEntity.accepted().body(response);
+        return ResponseEntity.accepted().body(FeedbackMapper.feedbackToDto(saved));
     }
 
+
     @GetMapping("/{id}")
-    public FeedbackResponseDTO getFeedback(@PathVariable UUID id) {
+    public FeedbackDto getFeedback(@PathVariable UUID id) {
         Feedback entity = feedbackService.getFeedbackById(id);
-        return mapToResponse(entity);
+        return FeedbackMapper.feedbackToDto(entity);
     }
 
     @GetMapping
-    public List<FeedbackResponseDTO> getByMemberId(@RequestParam String memberId) {
+    public List<FeedbackDto> getByMemberId(@RequestParam String memberId) {
         List<Feedback> entities = feedbackService.getFeedbackByMemberId(memberId);
 
         return entities.stream()
-                .map(this::mapToResponse)
+                .map((en) -> FeedbackMapper.feedbackToDto(en))
                 .toList();
-    }
-
-
-    private FeedbackResponseDTO mapToResponse(Feedback entity) {
-        return new FeedbackResponseDTO(
-            entity.getMemberId(),
-            entity.getProviderName(),
-            entity.getSubmittedAt(),
-            entity.getRating(),
-            entity.getComment()
-        );
     }
 }
