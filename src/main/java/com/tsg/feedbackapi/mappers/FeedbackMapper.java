@@ -3,6 +3,7 @@ package com.tsg.feedbackapi.mappers;
 
 import com.tsg.feedbackapi.dtos.FeedbackDto;
 import com.tsg.feedbackapi.repositories.entities.Feedback;
+
 public class FeedbackMapper {
 
 
@@ -20,29 +21,29 @@ public class FeedbackMapper {
 //    private String comment;
 //
 //    private OffsetDateTime submittedAt;
-    public static FeedbackDto feedbackToDto(Feedback feedbackEntity) {
+    public static FeedbackDto feedbackToDto(Feedback feedback) {
 
         return new FeedbackDto(
-                feedbackEntity.getId(),
-                feedbackEntity.getMemberId(),
-                feedbackEntity.getProviderName(),
-                feedbackEntity.getSubmittedAt(),
-                feedbackEntity.getRating(),
-                feedbackEntity.getComment()
+                feedback.getId(),
+                feedback.getMemberId(),
+                feedback.getProviderName(),
+                feedback.getSubmittedAt(),
+                feedback.getRating(),
+                feedback.getComment()
 
         );
     }
 
     public static Feedback dtoToEntity(FeedbackDto feedbackDto) {
 
-        Feedback feedbackEntity = new Feedback();
+        Feedback feedback = new Feedback();
 
-        feedbackEntity.setMemberId(feedbackDto.getMemberId());
-        feedbackEntity.setProviderName(feedbackDto.getProviderName());
-        feedbackEntity.setSubmittedAt(feedbackDto.getSubmittedAt());
-        feedbackEntity.setRating(feedbackDto.getRating());
-        feedbackEntity.setComment(feedbackDto.getComment());
-        return feedbackEntity;
+        feedback.setMemberId(feedbackDto.getMemberId());
+        feedback.setProviderName(feedbackDto.getProviderName());
+        feedback.setSubmittedAt(feedbackDto.getSubmittedAt());
+        feedback.setRating(feedbackDto.getRating());
+        feedback.setComment(feedbackDto.getComment());
+        return feedback;
 
     }
 }
