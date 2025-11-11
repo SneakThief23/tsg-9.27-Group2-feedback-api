@@ -1,9 +1,8 @@
 package com.tsg.feedbackapi.dtos;
 
 import jakarta.validation.constraints.*;
-import org.hibernate.validator.constraints.*;
 
-public class FeedbackRequest{
+public class FeedbackRequestDTO {
 
     @NotNull
     @Size(max = 36)
@@ -21,9 +20,9 @@ public class FeedbackRequest{
     @Size(max = 200)
     private String comment;
 
-    public FeedbackRequest() {}
+    public FeedbackRequestDTO() {}
 
-    public FeedbackRequest(String memberId, String providerName, Integer rating, String comment) {
+    public FeedbackRequestDTO(String memberId, String providerName, Integer rating, String comment) {
         this.memberId = memberId;
         this.providerName = providerName;
         this.rating = rating;

@@ -1,12 +1,15 @@
 package com.tsg.feedbackapi.controllers;
 
-import com.tsg.feedbackapi.dtos.FeedbackRequest;
-import com.tsg.feedbackapi.dtos.FeedbackResponse;
-import com.tsg.feedbackapi.repositories.entities.FeedbackEntity;
+import com.tsg.feedbackapi.dtos.FeedbackRequestDTO;
+import com.tsg.feedbackapi.dtos.FeedbackResponseDTO;
+import com.tsg.feedbackapi.repositories.entities.Feedback;
 import com.tsg.feedbackapi.services.FeedbackService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/feedback")
@@ -19,14 +22,30 @@ public class FeedbackController {
     }
 
     @PostMapping
-    public ResponseEntity<FeedbackResponse> submitFeedback(@RequestBody @Valid FeedbackRequest request) {
-        FeedbackEntity saved = feedbackService.saveFeedback(request);
-        FeedbackResponse response = mapToResponse(saved);
+    public ResponseEntity<FeedbackResponseDTO> submitFeedback(@RequestBody @Valid FeedbackRequestDTO request) {
+        Feedback saved = feedbackService.saveFeedback(request);
+        FeedbackResponseDTO response = mapToResponse(saved);
         return ResponseEntity.accepted().body(response);
     }
 
-    private FeedbackResponse mapToResponse(FeedbackEntity entity) {
-        return new FeedbackResponse(
+    @GetMapping("/{id}")
+    public FeedbackResponseDTO getFeedback(@PathVariable UUID id) {
+        Feedback entity = feedbackService.getFeedbackById(id);
+        return mapToResponse(entity);
+    }
+
+    @GetMapping
+    public List<FeedbackResponseDTO> getByMemberId(@RequestParam String memberId) {
+        List<Feedback> entities = feedbackService.getFeedbackByMemberId(memberId);
+
+        return entities.stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+
+    private FeedbackResponseDTO mapToResponse(Feedback entity) {
+        return new FeedbackResponseDTO(
             entity.getMemberId(),
             entity.getProviderName(),
             entity.getSubmittedAt(),

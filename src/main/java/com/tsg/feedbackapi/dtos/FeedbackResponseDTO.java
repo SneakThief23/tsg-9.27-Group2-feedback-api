@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 
 import java.time.OffsetDateTime;
 
-public class FeedbackResponse {
+public class FeedbackResponseDTO {
 
     @NotNull
     private String memberId;
@@ -22,9 +22,9 @@ public class FeedbackResponse {
 
     private String comment;
 
-    public FeedbackResponse() {}
+    public FeedbackResponseDTO() {}
 
-    public FeedbackResponse(String memberId, String providerName, OffsetDateTime submittedAt, Integer rating, String comment) {
+    public FeedbackResponseDTO(String memberId, String providerName, OffsetDateTime submittedAt, Integer rating, String comment) {
         this.memberId = memberId;
         this.providerName = providerName;
         this.submittedAt = submittedAt;

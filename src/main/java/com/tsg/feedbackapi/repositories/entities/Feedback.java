@@ -6,7 +6,7 @@ import java.time.OffsetDateTime;
 
 @Entity
 @Table(name ="feedback")
-public class FeedbackEntity {
+public class Feedback {
 
     @Id
     @GeneratedValue
@@ -24,9 +24,9 @@ public class FeedbackEntity {
     @Column(name = "submitted_at", columnDefinition = "TIMESTAMPTZ")
     private OffsetDateTime submittedAt;
 
-    public FeedbackEntity() {}
+    public Feedback() {}
 
-    public FeedbackEntity(UUID id, String memberId, String providerName, Integer rating, String comment, OffsetDateTime submittedAt) {
+    public Feedback(UUID id, String memberId, String providerName, Integer rating, String comment, OffsetDateTime submittedAt) {
         this.id = id;
         this.memberId = memberId;
         this.providerName = providerName;

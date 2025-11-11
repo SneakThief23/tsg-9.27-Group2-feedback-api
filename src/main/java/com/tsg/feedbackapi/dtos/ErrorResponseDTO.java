@@ -2,7 +2,7 @@ package com.tsg.feedbackapi.dtos;
 
 import java.time.OffsetDateTime;
 
-public record ErrorResponse (
+public record ErrorResponseDTO(
     OffsetDateTime timestamp,
     int status,
     String error,
