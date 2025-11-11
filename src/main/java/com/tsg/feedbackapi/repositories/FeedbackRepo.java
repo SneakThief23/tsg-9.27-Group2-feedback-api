@@ -1,12 +1,11 @@
 package com.tsg.feedbackapi.repositories;
 
-import com.tsg.feedbackapi.repositories.entities.Feedback;
+import com.tsg.feedbackapi.repositories.entities.FeedbackEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-public interface FeedbackRepo extends JpaRepository <Feedback, UUID> {
-    List<Feedback> findByMemberId(String memberId);
+public interface FeedbackRepo extends JpaRepository <FeedbackEntity, UUID> {
+    List<FeedbackEntity> findByMemberId(String memberId);
 }

@@ -1,9 +1,9 @@
 package com.tsg.feedbackapi.controllers;
 
-import com.tsg.feedbackapi.dtos.FeedbackDto;
+import com.tsg.feedbackapi.dtos.FeedbackRequestDTO;
 import com.tsg.feedbackapi.dtos.FeedbackResponseDTO;
 import com.tsg.feedbackapi.mappers.FeedbackMapper;
-import com.tsg.feedbackapi.repositories.entities.Feedback;
+import com.tsg.feedbackapi.repositories.entities.FeedbackEntity;
 import com.tsg.feedbackapi.services.FeedbackService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -17,30 +17,35 @@ import java.util.UUID;
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
+    private final FeedbackMapper mapper;
 
-    public FeedbackController(FeedbackService feedbackService) {
+    public FeedbackController(FeedbackService feedbackService, FeedbackMapper mapper) {
         this.feedbackService = feedbackService;
+        this.mapper = mapper;
     }
 
     @PostMapping
-    public ResponseEntity<FeedbackDto> submitFeedback(@RequestBody @Valid FeedbackDto request) {
-        Feedback saved = feedbackService.saveFeedback(request);
-        return ResponseEntity.accepted().body(FeedbackMapper.feedbackToDto(saved));
+    public ResponseEntity<FeedbackResponseDTO> submitFeedback(@Valid @RequestBody FeedbackRequestDTO request) {
+        FeedbackEntity saved = feedbackService.saveFeedback(request);
+        FeedbackResponseDTO response = mapper.toResponse(saved);
+        return ResponseEntity.accepted().body(response);
     }
 
 
     @GetMapping("/{id}")
-    public FeedbackDto getFeedback(@PathVariable UUID id) {
-        Feedback entity = feedbackService.getFeedbackById(id);
-        return FeedbackMapper.feedbackToDto(entity);
+    public FeedbackResponseDTO getFeedbackEntity(@PathVariable UUID id) {
+        FeedbackEntity entity = feedbackService.getFeedbackById(id);
+        return mapper.toResponse(entity);
     }
 
     @GetMapping
-    public List<FeedbackDto> getByMemberId(@RequestParam String memberId) {
-        List<Feedback> entities = feedbackService.getFeedbackByMemberId(memberId);
+    public List<FeedbackResponseDTO> getByMemberId(@RequestParam String memberId) {
+        List<FeedbackEntity> entities = feedbackService.getFeedbackByMemberId(memberId);
 
         return entities.stream()
-                .map((en) -> FeedbackMapper.feedbackToDto(en))
+                .map(en -> mapper.toResponse(en))
                 .toList();
     }
 }
+
+//added mapper reference

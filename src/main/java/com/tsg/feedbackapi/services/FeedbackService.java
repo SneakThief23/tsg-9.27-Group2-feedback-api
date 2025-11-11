@@ -1,8 +1,8 @@
 package com.tsg.feedbackapi.services;
 
-import com.tsg.feedbackapi.dtos.FeedbackDto;
+import com.tsg.feedbackapi.dtos.FeedbackRequestDTO;
 import com.tsg.feedbackapi.repositories.FeedbackRepo;
-import com.tsg.feedbackapi.repositories.entities.Feedback;
+import com.tsg.feedbackapi.repositories.entities.FeedbackEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -18,23 +18,19 @@ public class FeedbackService {
         this.repository = repository;
     }
 
-    public Feedback saveFeedback(FeedbackDto request) {
-        Feedback entity = new Feedback();
-        entity.setMemberId(request.getMemberId());
-        entity.setProviderName(request.getProviderName());
-        entity.setRating(request.getRating());
-        entity.setComment(request.getComment());
-        entity.setSubmittedAt(OffsetDateTime.now());
-
+    public FeedbackEntity saveFeedback(FeedbackRequestDTO request) {
+        FeedbackEntity entity = new FeedbackEntity();
         return repository.save(entity);
     }
 
-    public Feedback getFeedbackById(UUID id) {
+    public FeedbackEntity getFeedbackById(UUID id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Feedback not found"));
     }
 
-    public List<Feedback> getFeedbackByMemberId(String memberId) {
+    public List<FeedbackEntity> getFeedbackByMemberId(String memberId) {
         return repository.findByMemberId(memberId);
     }
 }
+
+//removed entity parts as they are mapped

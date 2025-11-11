@@ -1,26 +1,14 @@
 package com.tsg.feedbackapi.dtos;
 
 import jakarta.validation.constraints.*;
+import lombok.*;
 
 public class FeedbackRequestDTO {
 
-    @NotNull
-    @Size(max = 36)
-    private String memberId;
-
-    @NotNull
-    @Size(max = 80)
-    private String providerName;
-
-    @NotNull
-    @Min(1)
-    @Max(5)
-    private Integer rating;
-
-    @Size(max = 200)
-    private String comment;
-
-    public FeedbackRequestDTO() {}
+    @NotNull @Size(max = 36) private String memberId;
+    @NotNull @Size(max = 80) private String providerName;
+    @NotNull @Min(1) @Max(5) private Integer rating;
+    @Size(max = 200) private String comment;
 
     public FeedbackRequestDTO(String memberId, String providerName, Integer rating, String comment) {
         this.memberId = memberId;
@@ -60,4 +48,7 @@ public class FeedbackRequestDTO {
     public void setComment(String comment) {
         this.comment = comment;
     }
+
 }
+//Had to remove lombok to stop FeedbackMapper errors
+//From the client to the backend

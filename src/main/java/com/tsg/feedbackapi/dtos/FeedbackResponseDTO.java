@@ -1,28 +1,18 @@
 package com.tsg.feedbackapi.dtos;
 
 import jakarta.validation.constraints.*;
+import lombok.*;
 
 import java.time.OffsetDateTime;
 
+
 public class FeedbackResponseDTO {
 
-    @NotNull
-    private String memberId;
-
-    @NotNull
-    private String providerName;
-
-    @NotNull
-    private OffsetDateTime submittedAt;
-
-    @NotNull
-    @Min(1)
-    @Max(5)
-    private Integer rating;
-
+    @NotNull private String memberId;
+    @NotNull private String providerName;
+    @NotNull private OffsetDateTime submittedAt;
+    @NotNull @Min(1) @Max(5) private Integer rating;
     private String comment;
-
-    public FeedbackResponseDTO() {}
 
     public FeedbackResponseDTO(String memberId, String providerName, OffsetDateTime submittedAt, Integer rating, String comment) {
         this.memberId = memberId;
@@ -48,6 +38,14 @@ public class FeedbackResponseDTO {
         this.providerName = providerName;
     }
 
+    public OffsetDateTime getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public void setSubmittedAt(OffsetDateTime submittedAt) {
+        this.submittedAt = submittedAt;
+    }
+
     public Integer getRating() {
         return rating;
     }
@@ -63,12 +61,7 @@ public class FeedbackResponseDTO {
     public void setComment(String comment) {
         this.comment = comment;
     }
-
-    public OffsetDateTime getSubmittedAt() {
-        return submittedAt;
-    }
-
-    public void setSubmittedAt(OffsetDateTime submittedAt) {
-        this.submittedAt = submittedAt;
-    }
 }
+
+//Had to remove lombok to stop FeedbackMapper errors
+//From the backend to the client

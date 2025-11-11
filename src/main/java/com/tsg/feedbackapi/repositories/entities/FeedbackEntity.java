@@ -6,7 +6,7 @@ import java.time.OffsetDateTime;
 
 @Entity
 @Table(name ="feedback")
-public class Feedback {
+public class FeedbackEntity {
 
     @Id
     @GeneratedValue
@@ -24,9 +24,9 @@ public class Feedback {
     @Column(name = "submitted_at", columnDefinition = "TIMESTAMPTZ")
     private OffsetDateTime submittedAt;
 
-    public Feedback() {}
+    public FeedbackEntity() {}
 
-    public Feedback(UUID id, String memberId, String providerName, Integer rating, String comment, OffsetDateTime submittedAt) {
+    public FeedbackEntity(UUID id, String memberId, String providerName, Integer rating, String comment, OffsetDateTime submittedAt) {
         this.id = id;
         this.memberId = memberId;
         this.providerName = providerName;
@@ -83,3 +83,5 @@ public class Feedback {
         this.submittedAt = submittedAt;
     }
 }
+
+//Re-added Service for file searching

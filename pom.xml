@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.tsg.9.27</groupId>
-	<artifactId>feedback-api</artifactId>
+	<artifactId>feedbackEntity-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Group2</name>
 	<description>Demo project for Spring Boot</description>

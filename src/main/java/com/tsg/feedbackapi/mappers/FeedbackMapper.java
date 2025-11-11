@@ -1,49 +1,40 @@
 package com.tsg.feedbackapi.mappers;
 
 
-import com.tsg.feedbackapi.dtos.FeedbackDto;
-import com.tsg.feedbackapi.repositories.entities.Feedback;
+import com.tsg.feedbackapi.repositories.entities.FeedbackEntity;
+import com.tsg.feedbackapi.dtos.FeedbackResponseDTO;
+import com.tsg.feedbackapi.dtos.FeedbackRequestDTO;
 
+import org.springframework.stereotype.Component;
+
+import java.time.OffsetDateTime;
+
+@Component
 public class FeedbackMapper {
 
 
-    //    @Id
-//    @GeneratedValue
-//    private UUID id;
-//
-//    @Column(name = "member_id")
-//    private String memberId;
-//
-//    @Column(name = "provider_name")
-//    private String providerName;
-//
-//    private Integer rating;
-//    private String comment;
-//
-//    private OffsetDateTime submittedAt;
-    public static FeedbackDto feedbackToDto(Feedback feedback) {
+    public FeedbackEntity dtoToEntity(FeedbackRequestDTO dto) {
 
-        return new FeedbackDto(
-                feedback.getId(),
-                feedback.getMemberId(),
-                feedback.getProviderName(),
-                feedback.getSubmittedAt(),
-                feedback.getRating(),
-                feedback.getComment()
+        FeedbackEntity feedbackEntity = new FeedbackEntity();
 
-        );
+        feedbackEntity.setMemberId(dto.getMemberId());
+        feedbackEntity.setProviderName(dto.getProviderName());
+        feedbackEntity.setRating(dto.getRating());
+        feedbackEntity.setComment(dto.getComment());
+
+        //backend sets the timestamp
+        feedbackEntity.setSubmittedAt(OffsetDateTime.now());
+        return feedbackEntity;
+
     }
 
-    public static Feedback dtoToEntity(FeedbackDto feedbackDto) {
-
-        Feedback feedback = new Feedback();
-
-        feedback.setMemberId(feedbackDto.getMemberId());
-        feedback.setProviderName(feedbackDto.getProviderName());
-        feedback.setSubmittedAt(feedbackDto.getSubmittedAt());
-        feedback.setRating(feedbackDto.getRating());
-        feedback.setComment(feedbackDto.getComment());
-        return feedback;
-
+    public FeedbackResponseDTO toResponse(FeedbackEntity entity) {
+        return new FeedbackResponseDTO(
+                entity.getMemberId(),
+                entity.getProviderName(),
+                entity.getSubmittedAt(),
+                entity.getRating(),
+                entity.getComment()
+        );
     }
 }
