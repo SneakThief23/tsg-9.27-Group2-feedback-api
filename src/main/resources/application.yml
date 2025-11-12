@@ -24,3 +24,33 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+#server:
+#  port: 8083
+#
+#spring:
+#  application:
+#    name: Group2
+#  jackson:
+#    deserialization:
+#      fail-on-unknown-properties: true
+#    serialization:
+#      write-dates-as-timestamps: false
+#  kafka:
+#    bootstrap-servers: kafka:9092
+#    producer:
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#
+#  datasource:
+#    url: jdbc:postgresql://postgres:5432/Group2
+#    username: postgres
+#    password: passpass
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true

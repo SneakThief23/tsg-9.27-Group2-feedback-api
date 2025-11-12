@@ -1,9 +1,56 @@
 services:
   postgres:
-    image: 'postgres:latest'
+    image: postgres:latest
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      POSTGRES_DB: Group2
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: passpass
     ports:
-      - '5432'
+      - "5432:5432"
+
+## docker-compose.producer.yml
+#services:
+#  kafka:
+#    image: confluentinc/confluent-local:latest
+#    container_name: kafka
+#    ports:
+#      - "9092:9092"   # expose Kafka to host
+#      - "9093:9093"   # controller port, optional
+#    environment:
+#      KAFKA_ENABLE_KRAFT: yes
+#      KAFKA_CFG_NODE_ID: 1
+#      KAFKA_CFG_PROCESS_ROLES: broker,controller
+#      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+#      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+#      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+#      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+#      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#      ALLOW_PLAINTEXT_LISTENER: yes
+#    volumes:
+#      - kafka_data:/bitnami/kafka
+#
+#  postgres:
+#    image: postgres:latest
+#    environment:
+#      POSTGRES_DB: Group2
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: passpass
+#    ports:
+#      - "5432:5432"
+#
+#  producer:
+#    build: .
+#    depends_on:
+#      - kafka
+#      - postgres
+#    environment:
+#      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+#      POSTGRES_URL: jdbc:postgresql://postgres:5432/Group2
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: passpass
+#
+#    ports:
+#      - "8083:8083"
+#
+#volumes:
+#  kafka_data:

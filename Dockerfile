@@ -2,6 +2,11 @@
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 COPY . .
+
+# Make sure mvnw is executable
+RUN chmod +x ./mvnw
+
+# Then build
 RUN ./mvnw -q -DskipTests package
 
 # ---- Run Stage ----
