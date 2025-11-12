@@ -30,6 +30,7 @@ public class FeedbackMapper {
 
     public FeedbackResponseDTO toResponse(FeedbackEntity entity) {
         return new FeedbackResponseDTO(
+                entity.getId(),
                 entity.getMemberId(),
                 entity.getProviderName(),
                 entity.getSubmittedAt(),
