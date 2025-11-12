@@ -10,6 +10,8 @@ public class FeedbackRequestDTO {
     @NotNull @Min(1) @Max(5) private Integer rating;
     @Size(max = 200) private String comment;
 
+    public FeedbackRequestDTO() {}
+
     public FeedbackRequestDTO(String memberId, String providerName, Integer rating, String comment) {
         this.memberId = memberId;
         this.providerName = providerName;
