@@ -14,6 +14,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/feedback")
+@CrossOrigin(origins = "http://localhost:5173")
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
