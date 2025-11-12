@@ -4,22 +4,33 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 
 public class FeedbackResponseDTO {
 
+    private UUID id;
     @NotNull private String memberId;
     @NotNull private String providerName;
     @NotNull private OffsetDateTime submittedAt;
     @NotNull @Min(1) @Max(5) private Integer rating;
     private String comment;
 
-    public FeedbackResponseDTO(String memberId, String providerName, OffsetDateTime submittedAt, Integer rating, String comment) {
+    public FeedbackResponseDTO() {}
+    public FeedbackResponseDTO(UUID id, String memberId, String providerName, OffsetDateTime submittedAt, Integer rating, String comment) {
+        this.id = id;
         this.memberId = memberId;
         this.providerName = providerName;
         this.submittedAt = submittedAt;
         this.rating = rating;
         this.comment = comment;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getMemberId() {
