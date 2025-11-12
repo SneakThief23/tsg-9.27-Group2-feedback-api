@@ -1,8 +1,11 @@
 package com.tsg.feedbackapi.services;
 
 import com.tsg.feedbackapi.dtos.FeedbackRequestDTO;
+import com.tsg.feedbackapi.dtos.FeedbackResponseDTO;
+import com.tsg.feedbackapi.mappers.FeedbackMapper;
 import com.tsg.feedbackapi.repositories.FeedbackRepo;
 import com.tsg.feedbackapi.repositories.entities.FeedbackEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -13,14 +16,29 @@ import java.time.OffsetDateTime;
 public class FeedbackService {
 
     private final FeedbackRepo repository;
+    private final KafkaTemplate<String, FeedbackResponseDTO> kafkaTemplate;
+    private final FeedbackMapper mapper;
 
-    public FeedbackService(FeedbackRepo repository) {
+    public FeedbackService(FeedbackRepo repository,  KafkaTemplate<String, FeedbackResponseDTO> kafkaTemplate, FeedbackMapper mapper) {
         this.repository = repository;
+        this.kafkaTemplate = kafkaTemplate;
+        this.mapper = mapper;
     }
 
     public FeedbackEntity saveFeedback(FeedbackRequestDTO request) {
         FeedbackEntity entity = new FeedbackEntity();
-        return repository.save(entity);
+
+        entity.setMemberId(request.getMemberId());
+        entity.setProviderName(request.getProviderName());
+        entity.setRating(request.getRating());
+        entity.setComment(request.getComment());
+        entity.setSubmittedAt(OffsetDateTime.now());
+
+        FeedbackEntity saved = repository.save(entity);
+
+        kafkaTemplate.send("feedback-submitted", saved.getId().toString(), mapper.toResponse(saved));
+
+        return  saved;
     }
 
     public FeedbackEntity getFeedbackById(UUID id) {
