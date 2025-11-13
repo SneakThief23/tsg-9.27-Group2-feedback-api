@@ -6,6 +6,7 @@ import com.tsg.feedbackapi.mappers.FeedbackMapper;
 import com.tsg.feedbackapi.repositories.entities.FeedbackEntity;
 import com.tsg.feedbackapi.services.FeedbackService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,15 +29,21 @@ public class FeedbackController {
     @PostMapping
     public ResponseEntity<FeedbackResponseDTO> submitFeedback(@Valid @RequestBody FeedbackRequestDTO request) {
         FeedbackEntity saved = feedbackService.saveFeedback(request);
+        if(saved == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         FeedbackResponseDTO response = mapper.toResponse(saved);
-        return ResponseEntity.accepted().body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 
     @GetMapping("/{id}")
-    public FeedbackResponseDTO getFeedbackEntity(@PathVariable UUID id) {
+    public ResponseEntity<FeedbackResponseDTO> getFeedbackEntity(@PathVariable UUID id) {
         FeedbackEntity entity = feedbackService.getFeedbackById(id);
-        return mapper.toResponse(entity);
+        if(entity == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(mapper.toResponse(entity));
     }
 
     @GetMapping
