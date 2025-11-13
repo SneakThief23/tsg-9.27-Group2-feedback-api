@@ -3,9 +3,9 @@ package com.tsg.feedbackapi.services;
 import com.tsg.feedbackapi.dtos.FeedbackRequestDTO;
 import com.tsg.feedbackapi.dtos.FeedbackResponseDTO;
 import com.tsg.feedbackapi.mappers.FeedbackMapper;
+import com.tsg.feedbackapi.messaging.FeedbackEventPublisher;
 import com.tsg.feedbackapi.repositories.FeedbackRepo;
 import com.tsg.feedbackapi.repositories.entities.FeedbackEntity;
-import com.tsg.feedbackapi.services.FeedbackService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,31 +14,32 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FeedbackServiceTest {
 
-//         Step 1: Set up mocks for repository, KafkaTemplate, and mapper
+    //         Step 1: Set up mocks for repository, KafkaTemplate, and mapper
     @Mock
     private FeedbackRepo feedbackRepo;
     @Mock
     private FeedbackMapper feedbackMapper;
-
     @Mock
     private KafkaTemplate<String, FeedbackResponseDTO> kafkaTemplate;
 
 
-//     Step 2: Instantiate the FeedbackService using the mocks
+    //     Step 2: Instantiate the FeedbackService using the mocks
     @InjectMocks
-    private FeedbackService service;
+    private FeedbackService feedbackService;
+    @InjectMocks
+    private FeedbackEventPublisher publisher;
 
     @Test
     void shouldSaveFeedbackSuccessfully() {
@@ -49,14 +50,14 @@ class FeedbackServiceTest {
         feedbackRequestDTO.setMemberId("m-123");
         feedbackRequestDTO.setComment("Great service!");
 //         Step 4: Mock repository save method to return a FeedbackEntity
-        FeedbackEntity mockedEntity =  new FeedbackEntity(
+        FeedbackEntity mockedEntity = new FeedbackEntity(
                 UUID.randomUUID(),
                 feedbackRequestDTO.getMemberId(),
                 feedbackRequestDTO.getProviderName(),
                 feedbackRequestDTO.getRating(),
                 feedbackRequestDTO.getComment(),
                 OffsetDateTime.now()
-                );
+        );
 
         when(feedbackRepo.save(any(FeedbackEntity.class))).thenReturn(mockedEntity);
 //         Step 5: Mock mapper to convert entity to response DTO
@@ -64,7 +65,7 @@ class FeedbackServiceTest {
 
         when(feedbackMapper.toResponse(any(FeedbackEntity.class))).thenReturn(mockedResponse);
 //         Step 6: Act by calling saveFeedback() on the service
-        FeedbackEntity result = service.saveFeedback(feedbackRequestDTO);
+        FeedbackEntity result = feedbackService.saveFeedback(feedbackRequestDTO);
 //         Step 7: Assert that returned entity matches expectations
         assertNotNull(result);
         assertEquals("m-123", result.getMemberId());
@@ -80,36 +81,41 @@ class FeedbackServiceTest {
     @Test
     void shouldThrowWhenFeedbackNotFoundById() {
 //         Step 1: Arrange repository to return empty when findById is called
-
+        UUID id = UUID.randomUUID();
+        when(feedbackRepo.findById(id)).thenReturn(Optional.empty());
 //         Step 2: Act & Assert: call getFeedbackById() and expect exception
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> feedbackService.getFeedbackById(id)
+        );
+
+        assertEquals("Feedback not found: " + id, exception.getMessage());
+        verify(feedbackRepo, times(1)).findById(id);
+
     }
 
     @Test
     void shouldReturnListOfFeedbackForMember() {
 //         Step 1: Arrange repository to return a list of FeedbackEntity for a memberId
+        String memberId = "m-123";
+
+        FeedbackEntity feedback1 = new FeedbackEntity();
+        feedback1.setMemberId("m-123");
+        feedback1.setComment("Great service!");
+
+        FeedbackEntity feedback2 = new FeedbackEntity();
+        feedback2.setMemberId("m-123");
+        feedback2.setComment("Very good");
+
+        List<FeedbackEntity> feedbackList = List.of(feedback1, feedback2);
 
 //         Step 2: Act by calling getFeedbackByMemberId() on the service
+        when(feedbackRepo.findByMemberId(memberId)).thenReturn(feedbackList);
+        List<FeedbackEntity> result = feedbackService.getFeedbackByMemberId(memberId);
 
 //         Step 3: Assert that returned list matches expected size and content
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        verify(feedbackRepo, times(1)).findByMemberId(memberId);
     }
-
-    @Test
-    void shouldHandleNullEventGracefullyInListener() {
-//         Step 1: Arrange a FeedbackEventListener instance
-
-//         Step 2: Act by calling onMessage(null)
-
-//         Step 3: Assert that method returns null and does not throw an exception
-    }
-
-    @Test
-    void shouldProcessEventAndReturnStringRepresentation() {
-//         Step 1: Arrange a FeedbackResponseDTO with sample data
-
-//         Step 2: Act by calling onMessage() with the DTO
-
-//         Step 3: Assert that the returned string contains all relevant fields
-    }
-
-//         Step 4: Additional tests can include validation failures, Kafka exceptions, etc.
 }

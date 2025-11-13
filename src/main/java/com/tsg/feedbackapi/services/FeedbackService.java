@@ -43,12 +43,10 @@ public class FeedbackService {
     }
 
     public FeedbackEntity getFeedbackById(UUID id) {
-        return repository.findById(id).orElse(null);
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Feedback not found: " + id));
     }
 
     public List<FeedbackEntity> getFeedbackByMemberId(String memberId) {
         return repository.findByMemberId(memberId);
     }
 }
-
-//removed entity parts as they are mapped
