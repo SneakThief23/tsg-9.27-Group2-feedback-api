@@ -1,53 +1,9 @@
 services:
   postgres:
     image: postgres:latest
-    container_name: feedback-postgres
     environment:
-      POSTGRES_DB: Group2
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: passpass
+      - 'POSTGRES_DB=mydatabase'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=myuser'
     ports:
       - "5432:5432"
-    networks:
-      - shared-net
-
-#  kafka:
-#    image: confluentinc/cp-kafka:7.5.0
-#    container_name: feedback-kafka
-#    environment:
-#      KAFKA_PROCESS_ROLES: broker,controller
-#      KAFKA_NODE_ID: 1
-#      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
-#      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
-#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
-#      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
-#      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-#    ports:
-#      - "9092:9092"
-#      - "9093:9093"
-#    networks:
-#      - shared-net
-
-  feedback-api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: feedback-api
-    depends_on:
-      - postgres
-#      - kafka
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/Group2
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: passpass
-#      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-    ports:
-      - "8080:8080"
-    networks:
-      - shared-net
-
-networks:
-  shared-net:
-    driver: bridge
