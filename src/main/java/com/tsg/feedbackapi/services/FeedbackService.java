@@ -5,6 +5,7 @@ import com.tsg.feedbackapi.dtos.FeedbackResponseDTO;
 import com.tsg.feedbackapi.mappers.FeedbackMapper;
 import com.tsg.feedbackapi.repositories.FeedbackRepo;
 import com.tsg.feedbackapi.repositories.entities.FeedbackEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ public class FeedbackService {
         this.kafkaTemplate = kafkaTemplate;
         this.mapper = mapper;
     }
-
+    @Transactional
     public FeedbackEntity saveFeedback(FeedbackRequestDTO request) {
         FeedbackEntity entity = new FeedbackEntity();
 
