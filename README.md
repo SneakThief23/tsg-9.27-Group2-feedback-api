@@ -41,7 +41,7 @@ Make sure all three repositories are inside the same parent folder.
 
 Navigate into the feedback-api folder and open in IntelliJ.
 
->Run: docker compose up --build
+### Run: docker compose up --build
 
 >This command will: <br>
 -Build and start the React frontend <br>
