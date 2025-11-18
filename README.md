@@ -51,7 +51,7 @@ parent-folder/ <br>
 
 Make sure all three repositories are inside the same parent folder.
 
-Navigate into the feedback-api folder and open in IntelliJ.
+Navigate into the frontend folder and open in IntelliJ.
 
 ### Run: 
 ```
