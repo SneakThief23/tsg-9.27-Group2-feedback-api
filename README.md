@@ -55,6 +55,7 @@ Navigate into the frontend folder and open in IntelliJ.
 
 ### Run: 
 ```
+cd tsg-9.27-group2-frontend-feedback-ui
 docker compose up --build
 ```
 
