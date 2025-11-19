@@ -47,7 +47,7 @@ public class FeedbackController {
             }
     )
     @PostMapping
-    public ResponseEntity<FeedbackResponseDTO> submitFeedback(@Valid @RequestBody FeedbackRequestDTO request) {
+    public ResponseEntity<FeedbackResponseDTO> submitFeedback(@RequestBody FeedbackRequestDTO request) {
         FeedbackEntity saved = feedbackService.saveFeedback(request);
         if (saved == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
