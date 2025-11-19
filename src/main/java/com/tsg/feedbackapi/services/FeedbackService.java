@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.List;
 import java.time.OffsetDateTime;
@@ -21,13 +22,17 @@ public class FeedbackService {
     private final FeedbackMapper mapper;
 
 
-    public FeedbackService(FeedbackRepo repository,  KafkaTemplate<String, FeedbackResponseDTO> kafkaTemplate, FeedbackMapper mapper) {
+    public FeedbackService(FeedbackRepo repository, KafkaTemplate<String, FeedbackResponseDTO> kafkaTemplate, FeedbackMapper mapper) {
         this.repository = repository;
         this.kafkaTemplate = kafkaTemplate;
         this.mapper = mapper;
     }
+
     @Transactional
     public FeedbackEntity saveFeedback(FeedbackRequestDTO request) {
+
+        validate(request);
+
         FeedbackEntity entity = new FeedbackEntity();
 
         entity.setMemberId(request.getMemberId());
@@ -40,7 +45,7 @@ public class FeedbackService {
 
         kafkaTemplate.send("feedback-submitted", saved.getId().toString(), mapper.toResponse(saved));
 
-        return  saved;
+        return saved;
     }
 
     public FeedbackEntity getFeedbackById(UUID id) {
@@ -48,6 +53,42 @@ public class FeedbackService {
     }
 
     public List<FeedbackEntity> getFeedbackByMemberId(String memberId) {
+        if (memberId == null || memberId.isBlank()) {
+            throw new IllegalArgumentException("Member id must not be empty");
+        }
+
         return repository.findByMemberId(memberId);
     }
+
+
+    private void validate(FeedbackRequestDTO req) {
+        List<ValidationException.ValidationError> errors = new ArrayList<>();
+
+        if (req.getMemberId() == null || req.getMemberId().isBlank() || req.getMemberId().isEmpty()) {
+            errors.add(new ValidationException.ValidationError("memberId", "Member ID is required"));
+        } else if (req.getMemberId().length() > 36) {
+            errors.add(new ValidationException.ValidationError("memberId", "Must be ≤ 36 characters"));
+        }
+
+        if (req.getProviderName() == null || req.getProviderName().isBlank()) {
+            errors.add(new ValidationException.ValidationError("providerName", "Provider Name is required"));
+        } else if (req.getProviderName().length() > 80) {
+            errors.add(new ValidationException.ValidationError("providerName", "Provider Name must be ≤ 80 characters"));
+        }
+
+        if (req.getRating() == null) {
+            errors.add(new ValidationException.ValidationError("rating", "Rating is required"));
+        } else if (req.getRating() < 1 || req.getRating() > 5) {
+            errors.add(new ValidationException.ValidationError("rating", "Rating must be between 1 and 5"));
+        }
+
+        if (req.getComment() != null && req.getComment().length() > 200) {
+            errors.add(new ValidationException.ValidationError("comment", "Comment must be ≤ 200 characters"));
+        }
+
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
+    }
+
 }

@@ -1,6 +1,19 @@
 package com.tsg.feedbackapi.services;
 
-public class ValidationException {
-}
+import java.util.List;
 
-//part of file structure, may remove as validations happen in DTOs
+public class ValidationException extends RuntimeException {
+
+    private final List<ValidationError> errors;
+
+    public ValidationException(List<ValidationError> errors) {
+        super("Validation failed");
+        this.errors = errors;
+    }
+
+    public List<ValidationError> getErrors() {
+        return errors;
+    }
+
+    public record ValidationError(String field, String message) {}
+}
