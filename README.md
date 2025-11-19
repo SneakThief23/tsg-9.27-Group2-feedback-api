@@ -41,8 +41,8 @@ Clone the three repositories inside a single parent folder:
 
 ```
 parent-folder/ <br>
-├── feedback-ui                (React frontend) <br>
-├── feedback-api               (Spring Boot producer) <br>
+├── feedback-ui                (React frontend)
+├── feedback-api               (Spring Boot producer)
 ├── feedback-analytics-consumer (Spring Boot consumer)
 ```
 ***
@@ -67,6 +67,9 @@ This command will:
 - Start PostgreSQL
 
 All services will come up using a shared Docker network defined in the frontend compose file.
+
+### Navigate to the user interface:
+```http://localhost:5173/```
 ***
 
 # Services Overview
