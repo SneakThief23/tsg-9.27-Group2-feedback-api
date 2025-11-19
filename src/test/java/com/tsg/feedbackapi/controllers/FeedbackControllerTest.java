@@ -43,17 +43,14 @@ class FeedbackControllerTest {
 
     @Test
     void submitFeedback_ReturnsCreated_WhenValid() throws Exception {
-
-//  Step 1: Build a valid FeedbackRequestDTO JSON.
+        // Arrange: Build valid request DTO and mock service & mapper
         FeedbackRequestDTO request = new FeedbackRequestDTO();
-
         request.setMemberId("m-222");
         request.setRating(5);
         request.setProviderName("provider");
         request.setComment("comment");
 
         FeedbackEntity saved = new FeedbackEntity();
-
         saved.setId(UUID.randomUUID());
         saved.setMemberId("m-222");
         saved.setRating(5);
@@ -70,42 +67,27 @@ class FeedbackControllerTest {
                 saved.getComment()
         );
 
-        String json = """
-                {
-                  "memberId": "123",
-                  "providerName": "Provider X",
-                  "rating": 5,
-                  "comment": "Great service"
-                }
-                """;
-
-//  Step 2: Mock feedbackService.saveFeedback(...) to return a non-null FeedbackEntity.
-
         when(feedbackService.saveFeedback(any())).thenReturn(saved);
-//  Step 3: Mock mapper.toResponse(...) to return a FeedbackResponseDTO.
         when(feedbackMapper.toResponse(saved)).thenReturn(response);
-//  Step 4: Call POST /api/v1/feedback with valid JSON using MockMvc.
+
+        // Act: Perform POST request via MockMvc
         mockMvc.perform(post("/api/v1/feedback")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
+                // Assert: Verify response status and JSON content
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.memberId").value("m-222"))
                 .andExpect(jsonPath("$.providerName").value("provider"))
                 .andExpect(jsonPath("$.rating").value(5))
                 .andExpect(jsonPath("$.comment").value("Great service"));
-
-//  Step 5: Expect status 201 CREATED.
-//  Step 6: Expect JSON response to contain the mapped fields
-
     }
 
     @Test
     void getFeedbackEntity_Returns200_WhenFound() throws Exception {
-//         Step 1: Prepare a valid UUID.
+        // Arrange: Prepare UUID, FeedbackEntity, ResponseDTO, and mock service & mapper
         UUID id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
 
-// Step 2: Build a FeedbackEntity returned by the service.
         FeedbackEntity entity = new FeedbackEntity();
         entity.setId(id);
         entity.setMemberId("m-222");
@@ -114,7 +96,6 @@ class FeedbackControllerTest {
         entity.setComment("Great service!");
         entity.setSubmittedAt(OffsetDateTime.now());
 
-// Step 3: Build the mapped ResponseDTO.
         FeedbackResponseDTO response = new FeedbackResponseDTO(
                 entity.getId(),
                 entity.getMemberId(),
@@ -124,11 +105,10 @@ class FeedbackControllerTest {
                 entity.getComment()
         );
 
-// Step 4: Mock service + mapper.
         when(feedbackService.getFeedbackById(id)).thenReturn(entity);
         when(feedbackMapper.toResponse(entity)).thenReturn(response);
 
-// Step 5: Call GET /api/v1/feedback/{id} and assert 200 + JSON.
+        // Act & Assert: Call GET and verify status + JSON
         mockMvc.perform(get("/api/v1/feedback/" + id)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -139,11 +119,9 @@ class FeedbackControllerTest {
                 .andExpect(jsonPath("$.comment").value("Great service!"));
     }
 
-
     @Test
     void getByMemberId_Returns200_WithList() throws Exception {
-
-// Step 1: Create a mock FeedbackEntity representing a saved record.
+        // Arrange: Create mock entity and corresponding DTO, mock service and mapper
         UUID id = UUID.randomUUID();
 
         FeedbackEntity entity = new FeedbackEntity();
@@ -154,7 +132,6 @@ class FeedbackControllerTest {
         entity.setComment("comment");
         entity.setSubmittedAt(OffsetDateTime.now());
 
-// Step 2: Create the mapped FeedbackResponseDTO that the mapper should return.
         FeedbackResponseDTO dto = new FeedbackResponseDTO(
                 id,
                 "m-222",
@@ -164,24 +141,17 @@ class FeedbackControllerTest {
                 "comment"
         );
 
-// Step 3: Mock the service to return a list with one entity.
-        when(feedbackService.getFeedbackByMemberId("m-222"))
-                .thenReturn(List.of(entity));
-
-// Step 4: Mock the mapper to convert the entity into its DTO.
+        when(feedbackService.getFeedbackByMemberId("m-222")).thenReturn(List.of(entity));
         when(feedbackMapper.toResponse(entity)).thenReturn(dto);
 
-// Step 5: Call GET /api/v1/feedback and pass memberId=m-222.
+        // Act & Assert: Perform GET request and verify response
         mockMvc.perform(get("/api/v1/feedback?memberId=m-222"))
-
-// Step 6: Expect status 200 OK.
                 .andExpect(status().isOk())
-
-// Step 7: Validate the returned JSON list contains the correct values.
                 .andExpect(jsonPath("$[0].memberId").value("m-222"))
                 .andExpect(jsonPath("$[0].rating").value(5))
                 .andExpect(jsonPath("$.length()").value(1));
     }
+
 
 
 //    BAD REQUESTS
@@ -189,6 +159,7 @@ class FeedbackControllerTest {
 
     @Test
     void submitFeedback_Returns400_WhenServiceReturnsNull() throws Exception {
+        // Arrange: Build valid request DTO and mock service to return null
         FeedbackRequestDTO request = new FeedbackRequestDTO();
         request.setMemberId("12345");
         request.setProviderName("Provider");
@@ -197,6 +168,7 @@ class FeedbackControllerTest {
 
         when(feedbackService.saveFeedback(any())).thenReturn(null);
 
+        // Act & Assert: Perform POST request and expect 400 Bad Request
         mockMvc.perform(post("/api/v1/feedback")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -204,28 +176,20 @@ class FeedbackControllerTest {
     }
 
 
+
     @Test
     void getFeedbackEntity_Returns404_WhenNotFound() throws Exception {
-// Step 1: Build a valid FeedbackResponseDTO JSON.
-
-        FeedbackRequestDTO request = new FeedbackRequestDTO();
-
+        // Arrange: Prepare UUID and mock service to return null
         UUID id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
-
-        request.setMemberId("m-222");
-        request.setRating(5);
-        request.setProviderName("provider");
-        request.setComment("comment");
-
-// Step 2: Mock feedbackService.saveFeedback(...) to return null.
         when(feedbackService.getFeedbackById(id)).thenReturn(null);
+
+        // Act & Assert: Perform GET request and verify 404 with empty body
         mockMvc.perform(get("/api/v1/feedback/" + id)
                         .accept(MediaType.APPLICATION_JSON))
-//         Step 4: Expect status 400 BAD REQUEST.
                 .andExpect(status().isNotFound())
-//         Step 5: No body returned.
                 .andExpect(content().string(""));
     }
+
 
 
 }

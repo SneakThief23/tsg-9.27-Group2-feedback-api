@@ -80,42 +80,45 @@ class FeedbackServiceTest {
 
     @Test
     void shouldThrowWhenFeedbackNotFoundById() {
-//         Step 1: Arrange repository to return empty when findById is called
+        // Arrange
         UUID id = UUID.randomUUID();
         when(feedbackRepo.findById(id)).thenReturn(Optional.empty());
-//         Step 2: Act & Assert: call getFeedbackById() and expect exception
+
+        // Act
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
                 () -> feedbackService.getFeedbackById(id)
         );
 
+        // Assert
         assertEquals("Feedback not found: " + id, exception.getMessage());
         verify(feedbackRepo, times(1)).findById(id);
-
     }
 
     @Test
     void shouldReturnListOfFeedbackForMember() {
-//         Step 1: Arrange repository to return a list of FeedbackEntity for a memberId
+        // Arrange
         String memberId = "m-123";
 
         FeedbackEntity feedback1 = new FeedbackEntity();
-        feedback1.setMemberId("m-123");
+        feedback1.setMemberId(memberId);
         feedback1.setComment("Great service!");
 
         FeedbackEntity feedback2 = new FeedbackEntity();
-        feedback2.setMemberId("m-123");
+        feedback2.setMemberId(memberId);
         feedback2.setComment("Very good");
 
         List<FeedbackEntity> feedbackList = List.of(feedback1, feedback2);
 
-//         Step 2: Act by calling getFeedbackByMemberId() on the service
         when(feedbackRepo.findByMemberId(memberId)).thenReturn(feedbackList);
+
+        // Act
         List<FeedbackEntity> result = feedbackService.getFeedbackByMemberId(memberId);
 
-//         Step 3: Assert that returned list matches expected size and content
+        // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(feedbackRepo, times(1)).findByMemberId(memberId);
     }
+
 }
