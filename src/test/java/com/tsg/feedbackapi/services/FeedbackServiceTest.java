@@ -61,11 +61,19 @@ class FeedbackServiceTest {
 
         when(feedbackRepo.save(any(FeedbackEntity.class))).thenReturn(mockedEntity);
 //         Step 5: Mock mapper to convert entity to response DTO
-        FeedbackResponseDTO mockedResponse = feedbackMapper.toResponse(mockedEntity);
+        FeedbackResponseDTO mockedResponse = new FeedbackResponseDTO(
+                mockedEntity.getId(),
+                mockedEntity.getMemberId(),
+                mockedEntity.getProviderName(),
+                mockedEntity.getSubmittedAt(),
+                mockedEntity.getRating(),
+                mockedEntity.getComment()
+        );
+
 
         when(feedbackMapper.toResponse(any(FeedbackEntity.class))).thenReturn(mockedResponse);
 //         Step 6: Act by calling saveFeedback() on the service
-        FeedbackEntity result = feedbackService.saveFeedback(feedbackRequestDTO);
+        FeedbackResponseDTO result = feedbackService.saveFeedback(feedbackRequestDTO);
 //         Step 7: Assert that returned entity matches expectations
         assertNotNull(result);
         assertEquals("m-123", result.getMemberId());
@@ -75,7 +83,10 @@ class FeedbackServiceTest {
 
 //         Step 8: Verify KafkaTemplate send method was called with correct topic/key/value
 
-        verify(kafkaTemplate).send(eq("feedback-submitted"), eq(mockedEntity.getId().toString()), eq(mockedResponse));
+        verify(kafkaTemplate).send(
+                eq("feedback-submitted"),
+                eq(mockedEntity.getId().toString()),
+                eq(mockedResponse));
     }
 
     @Test
@@ -113,7 +124,7 @@ class FeedbackServiceTest {
         when(feedbackRepo.findByMemberId(memberId)).thenReturn(feedbackList);
 
         // Act
-        List<FeedbackEntity> result = feedbackService.getFeedbackByMemberId(memberId);
+        List<FeedbackResponseDTO> result = feedbackService.getFeedbackByMemberId(memberId);
 
         // Assert
         assertNotNull(result);

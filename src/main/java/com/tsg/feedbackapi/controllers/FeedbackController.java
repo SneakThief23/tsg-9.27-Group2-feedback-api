@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 //Swagger-ui
@@ -29,12 +30,10 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
-    private final FeedbackMapper mapper;
 
 
-    public FeedbackController(FeedbackService feedbackService, FeedbackMapper mapper) {
+    public FeedbackController(FeedbackService feedbackService) {
         this.feedbackService = feedbackService;
-        this.mapper = mapper;
     }
 
     @Operation(
@@ -47,13 +46,13 @@ public class FeedbackController {
             }
     )
     @PostMapping
-    public ResponseEntity<FeedbackResponseDTO> submitFeedback(@RequestBody FeedbackRequestDTO request) {
-        FeedbackEntity saved = feedbackService.saveFeedback(request);
+    public ResponseEntity<FeedbackResponseDTO> submitFeedback( @Valid @RequestBody FeedbackRequestDTO request) {
+        System.out.println("FeedbackController hit");
+        FeedbackResponseDTO saved = feedbackService.saveFeedback(request);
         if (saved == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        FeedbackResponseDTO response = mapper.toResponse(saved);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @Operation(
@@ -67,11 +66,11 @@ public class FeedbackController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<FeedbackResponseDTO> getFeedbackEntity(@PathVariable UUID id) {
-        FeedbackEntity entity = feedbackService.getFeedbackById(id);
-        if (entity == null) {
+        FeedbackResponseDTO entityDto = feedbackService.getFeedbackById(id);
+        if (entityDto == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(mapper.toResponse(entity));
+        return ResponseEntity.ok(entityDto);
     }
 
     @Operation(
@@ -85,13 +84,7 @@ public class FeedbackController {
             }
     )
     @GetMapping
-    public List<FeedbackResponseDTO> getByMemberId(@RequestParam String memberId) {
-        List<FeedbackEntity> entities = feedbackService.getFeedbackByMemberId(memberId);
-
-        return entities.stream()
-                .map(en -> mapper.toResponse(en))
-                .toList();
+    public ResponseEntity<List<FeedbackResponseDTO>> getByMemberId(@RequestParam String memberId) {
+        return ResponseEntity.ok(feedbackService.getFeedbackByMemberId(memberId));
     }
 }
-
-//added mapper reference

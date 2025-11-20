@@ -29,7 +29,7 @@ public class FeedbackService {
     }
 
     @Transactional
-    public FeedbackEntity saveFeedback(FeedbackRequestDTO request) {
+    public FeedbackResponseDTO saveFeedback(FeedbackRequestDTO request) {
 
         validate(request);
 
@@ -45,23 +45,27 @@ public class FeedbackService {
 
         kafkaTemplate.send("feedback-submitted", saved.getId().toString(), mapper.toResponse(saved));
 
-        return saved;
+        return mapper.toResponse(saved);
     }
 
-    public FeedbackEntity getFeedbackById(UUID id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Feedback not found: " + id));
+    public FeedbackResponseDTO getFeedbackById(UUID id) {
+        FeedbackEntity feedbackEntity = repository.findById(id).orElseThrow(() -> new RuntimeException("Feedback not found: " + id));
+        return mapper.toResponse(feedbackEntity);
     }
 
-    public List<FeedbackEntity> getFeedbackByMemberId(String memberId) {
+    public List<FeedbackResponseDTO> getFeedbackByMemberId(String memberId) {
         if (memberId == null || memberId.isBlank()) {
             throw new IllegalArgumentException("Member id must not be empty");
         }
-
-        return repository.findByMemberId(memberId);
+        return repository.findByMemberId(memberId).stream()
+                .map(en -> mapper.toResponse(en)).toList();
     }
 
 
     private void validate(FeedbackRequestDTO req) {
+
+        System.out.println("Validating request: " + req);
+
         List<ValidationException.ValidationError> errors = new ArrayList<>();
 
         if (req.getMemberId() == null || req.getMemberId().isBlank() || req.getMemberId().isEmpty()) {

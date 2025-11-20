@@ -34,9 +34,6 @@ class FeedbackControllerTest {
     @MockBean
     private FeedbackService feedbackService;
 
-    @MockBean
-    private FeedbackMapper feedbackMapper;
-
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -50,7 +47,7 @@ class FeedbackControllerTest {
         request.setProviderName("provider");
         request.setComment("comment");
 
-        FeedbackEntity saved = new FeedbackEntity();
+        FeedbackResponseDTO saved = new FeedbackResponseDTO();
         saved.setId(UUID.randomUUID());
         saved.setMemberId("m-222");
         saved.setRating(5);
@@ -58,17 +55,7 @@ class FeedbackControllerTest {
         saved.setComment("Great service");
         saved.setSubmittedAt(OffsetDateTime.now());
 
-        FeedbackResponseDTO response = new FeedbackResponseDTO(
-                saved.getId(),
-                saved.getMemberId(),
-                saved.getProviderName(),
-                saved.getSubmittedAt(),
-                saved.getRating(),
-                saved.getComment()
-        );
-
         when(feedbackService.saveFeedback(any())).thenReturn(saved);
-        when(feedbackMapper.toResponse(saved)).thenReturn(response);
 
         // Act: Perform POST request via MockMvc
         mockMvc.perform(post("/api/v1/feedback")
@@ -88,7 +75,7 @@ class FeedbackControllerTest {
         // Arrange: Prepare UUID, FeedbackEntity, ResponseDTO, and mock service & mapper
         UUID id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
 
-        FeedbackEntity entity = new FeedbackEntity();
+        FeedbackResponseDTO entity = new FeedbackResponseDTO();
         entity.setId(id);
         entity.setMemberId("m-222");
         entity.setProviderName("provider");
@@ -96,17 +83,7 @@ class FeedbackControllerTest {
         entity.setComment("Great service!");
         entity.setSubmittedAt(OffsetDateTime.now());
 
-        FeedbackResponseDTO response = new FeedbackResponseDTO(
-                entity.getId(),
-                entity.getMemberId(),
-                entity.getProviderName(),
-                entity.getSubmittedAt(),
-                entity.getRating(),
-                entity.getComment()
-        );
-
         when(feedbackService.getFeedbackById(id)).thenReturn(entity);
-        when(feedbackMapper.toResponse(entity)).thenReturn(response);
 
         // Act & Assert: Call GET and verify status + JSON
         mockMvc.perform(get("/api/v1/feedback/" + id)
@@ -124,7 +101,7 @@ class FeedbackControllerTest {
         // Arrange: Create mock entity and corresponding DTO, mock service and mapper
         UUID id = UUID.randomUUID();
 
-        FeedbackEntity entity = new FeedbackEntity();
+        FeedbackResponseDTO entity = new FeedbackResponseDTO();
         entity.setId(id);
         entity.setMemberId("m-222");
         entity.setProviderName("provider");
@@ -132,17 +109,8 @@ class FeedbackControllerTest {
         entity.setComment("comment");
         entity.setSubmittedAt(OffsetDateTime.now());
 
-        FeedbackResponseDTO dto = new FeedbackResponseDTO(
-                id,
-                "m-222",
-                "provider",
-                entity.getSubmittedAt(),
-                5,
-                "comment"
-        );
 
         when(feedbackService.getFeedbackByMemberId("m-222")).thenReturn(List.of(entity));
-        when(feedbackMapper.toResponse(entity)).thenReturn(dto);
 
         // Act & Assert: Perform GET request and verify response
         mockMvc.perform(get("/api/v1/feedback?memberId=m-222"))
@@ -151,7 +119,6 @@ class FeedbackControllerTest {
                 .andExpect(jsonPath("$[0].rating").value(5))
                 .andExpect(jsonPath("$.length()").value(1));
     }
-
 
 
 //    BAD REQUESTS
@@ -176,7 +143,6 @@ class FeedbackControllerTest {
     }
 
 
-
     @Test
     void getFeedbackEntity_Returns404_WhenNotFound() throws Exception {
         // Arrange: Prepare UUID and mock service to return null
@@ -189,7 +155,6 @@ class FeedbackControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().string(""));
     }
-
 
 
 }

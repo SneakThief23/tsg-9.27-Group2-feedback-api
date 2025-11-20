@@ -10,10 +10,10 @@ import java.util.UUID;
 public class FeedbackResponseDTO {
 
     private UUID id;
-    @NotNull private String memberId;
-    @NotNull private String providerName;
-    @NotNull private OffsetDateTime submittedAt;
-    @NotNull @Min(1) @Max(5) private Integer rating;
+    private String memberId;
+    private String providerName;
+    private OffsetDateTime submittedAt;
+    private Integer rating;
     private String comment;
 
     public FeedbackResponseDTO() {}
@@ -74,5 +74,3 @@ public class FeedbackResponseDTO {
     }
 }
 
-//Had to remove lombok to stop FeedbackMapper errors
-//From the backend to the client

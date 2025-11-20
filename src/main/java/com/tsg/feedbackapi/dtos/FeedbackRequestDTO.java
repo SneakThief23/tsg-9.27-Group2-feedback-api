@@ -52,5 +52,3 @@ public class FeedbackRequestDTO {
     }
 
 }
-//Had to remove lombok to stop FeedbackMapper errors
-//From the client to the backend

@@ -23,7 +23,7 @@ public class FeedbackMapper {
         feedbackEntity.setComment(dto.getComment());
 
         //backend sets the timestamp
-        feedbackEntity.setSubmittedAt(OffsetDateTime.now());
+//        feedbackEntity.setSubmittedAt(OffsetDateTime.now());
         return feedbackEntity;
 
     }
